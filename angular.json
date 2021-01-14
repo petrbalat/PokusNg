@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/test",
+            "outputPath": "dist/test/browser",
             "index": "projects/test/src/index.html",
             "main": "projects/test/src/main.ts",
             "polyfills": "projects/test/src/polyfills.ts",
@@ -102,7 +102,8 @@
             "tsConfig": [
               "projects/test/tsconfig.app.json",
               "projects/test/tsconfig.spec.json",
-              "projects/test/e2e/tsconfig.json"
+              "projects/test/e2e/tsconfig.json",
+              "projects/test/tsconfig.server.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -119,6 +120,53 @@
             "production": {
               "devServerTarget": "test:serve:production"
             }
+          }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/test/server",
+            "main": "projects/test/server.ts",
+            "tsConfig": "projects/test/tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "projects/test/src/environments/environment.ts",
+                  "with": "projects/test/src/environments/environment.prod.ts"
+                }
+              ],
+              "sourceMap": false,
+              "optimization": true
+            }
+          }
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "options": {
+            "browserTarget": "test:build",
+            "serverTarget": "test:server"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "test:build:production",
+              "serverTarget": "test:server:production"
+            }
+          }
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "browserTarget": "test:build:production",
+            "serverTarget": "test:server:production",
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {}
           }
         }
       }
